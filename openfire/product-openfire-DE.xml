@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="openfire" active="1">
+	<title>Openfire Integration</title>
+	<description>Integrate Openfire to vBulletin.</description>
+	<version>1.0.0 Beta 3</version>
+	<url />
+	<versioncheckurl />
+	<dependencies>
+	</dependencies>
+	<codes>
+	</codes>
+	<templates>
+	</templates>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Send Registration to the Openfire Server</title>
+			<hookname>register_activate_process</hookname>
+			<phpcode><![CDATA[$zeichen = ("abcdefghijklnmopqrstuvwxyzABCDEFGHIJKLNMOPQRSTUVWXYZ0123456789");                                        
+mt_srand ((double) microtime() * 1000000);               
+                                                         
+for ($i = 0; $i < 9; $i++) {   
+    $openfire_password .= $zeichen{mt_rand (0,strlen($zeichen))};
+}
+
+$sendjabber_register = file_get_contents("https://".$vbulletin->options['openfire_host'].":9091/plugins/userService/userservice?type=add&secret=".$vbulletin->options['openfire_secretkey']."&username=".utf8_encode(rawurlencode($userinfo['username']))."&password=".utf8_encode(rawurlencode($openfire_password))."&email=".utf8_encode(rawurlencode($userinfo['email'])));
+
+$username = $userinfo['username'];
+
+eval(fetch_email_phrases('openfire_accountdata'));
+vbmail($userinfo['email'], $subject, $message);]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+		<phrasetype name="E-Mail: Text" fieldname="emailbody">
+			<phrase name="openfire_accountdata" date="1221954772" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Hallo $username,
+
+Vielen Dank für Ihre Registrierung auf $vboptions[bbtitle]!
+
+Ihre Jabber-Benutzerdaten:
+
+Jabber-ID: $username@$vboptions[openfire_host]
+Kennwort: $openfire_password
+
+Mit freundlichen Grüßen,
+$vboptions[bbtitle]]]></phrase>
+		</phrasetype>
+		<phrasetype name="E-Mail: Betreff" fieldname="emailsubject">
+			<phrase name="openfire_accountdata" date="1221955643" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Ihre Jabber-Benutzerdaten]]></phrase>
+		</phrasetype>
+		<phrasetype name="vBulletin-Einstellungen" fieldname="vbsettings">
+			<phrase name="setting_openfire_host_desc" date="1221951984" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Bitte geben Sie hier den Hostnamen Ihres Openfire-Server ein:]]></phrase>
+			<phrase name="setting_openfire_host_title" date="1221951984" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Openfire-Hostname]]></phrase>
+			<phrase name="setting_openfire_secretkey_desc" date="1221951886" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Ihr Openfire Secret Key:]]></phrase>
+			<phrase name="setting_openfire_secretkey_title" date="1221951886" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Secret Key]]></phrase>
+			<phrase name="settinggroup_openfire" date="1221951823" username="Sebijk" version="1.0.0 Beta 1"><![CDATA[Openfire-Integration]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="openfire" displayorder="65535">
+			<setting varname="openfire_secretkey" displayorder="10">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="openfire_host" displayorder="20">
+				<datatype>free</datatype>
+				<defaultvalue>localhost</defaultvalue>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<templateedits>
+	</templateedits>
+</product>

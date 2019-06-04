@@ -1,0 +1,10 @@
+1.0.0 Beta 3
+* fopen wird nicht mehr benötigt
+* Importskript enthalten
+* Installationsanleitung enthalten
+
+1.0.0 Beta 2
+* Schwerwiegender Bug mit der Kennwortregistrierung behoben
+
+1.0.0 Beta 1
+* Erste Version 

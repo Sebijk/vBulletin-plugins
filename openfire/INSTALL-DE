@@ -1,0 +1,35 @@
+Sie brauchen:
+
+Einen Server mit Rootzugang
+Openfire: http://www.igniterealtime.org/projects/openfire/index.jsp
+UserService Plugin für Openfire: http://www.igniterealtime.org/projects/openfire/plugins/userservice.jar
+vBulletin 3.7 oder höher (3.6 und 3.5 wurden nicht getestet)
+
+Installationsanleitung für Openfire: http://www.igniterealtime.org/builds/openfire/docs/latest/documentation/install-guide.html
+
+Installationsanleitung für UserService Plugin für Openfire:
+
+Gehen Sie zum Openfire Admin Control Panel unter Plugins und laden Sie die Datei hoch.
+Nach der erfolgreiche Plugininstallation, gehen Sie zu Servereinstellungen -> User Service. 
+Dort können Sie einen Secret Key erstellen.
+
+
+Danach gehen Sie zum vBulletin Administratorkontrollzentrum und importieren Sie die Datei product-openfire-DE.xml.
+
+Gehen Sie dann zu vBulletin-Einstellungen -> Openfire-Integration und geben Sie Ihr Openfire Host und Secret key ein.
+
+Fertig!
+
+Wenn Sie bestehende Benutzer ins Openfire übertragen wollen, laden Sie die Datei convert_vbusers_to_openfire.php in Ihren
+vBulletin Rootverzeichnis hoch und führen Sie es einmal aus.
+
+HINWEIS: Es wird empfohlen, eine Sicherung der Openfiredatenbank, sowie die vBulletin-Datenbank zu machen. Dieses Importskript wurde
+nur mit geringer Benutzerzahl getestet, daher weiß ich es nicht, wie es sich mit größerer Benutzerzahl verhält. Wenn jemand diesen
+Importskript verbessern möchte, nur zu . Wer es lokal testen möchte, sollte unbedingt die vbmail-Zeile auskommentieren, sonst könnten die zu
+(testweise) importierende Benutzer evtl. eine unerwünschte E-Mail bekommen.
+
+Benutzung des Importskripts geht auf eigene Gefahr!
+
+Wenn Sie Timout-Fehler bekommen, sollten Sie safe_mode temporär ausschalten und schalten Sie max_execution_time temporär auf 50000.
+
+Nachdem Import sollten Sie die PHP-Einstellungen wieder zurücksetzen.
