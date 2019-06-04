@@ -1,0 +1,36 @@
+Sollten Sie kein TMS installiert haben, so müssen Sie noch manuelle
+Templateänderungen machen.
+
+Suchen Sie in der headinclude nach:
+
+<!-- CSS Stylesheet -->
+
+und fügen Sie darüber:
+
+<meta http-equiv="Page-Enter" content="blendTrans(Duration=$vboptions[blendtrans_sec])" />
+<meta http-equiv="Page-Exit" content="blendTrans(Duration=$vboptions[blendtrans_sec])" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<script type="text/javascript">
+<!--
+var delay = $vboptions[blendtrans_ff_sec];
+var opa=0;
+var sett;
+onload=function(){
+setTimeout('fade()',delay);
+}
+function fade(){
+opa++;
+var obj = document.getElementsByTagName('html');
+
+if(window.sidebar){//Moz
+obj[0].style.MozOpacity=(opa==10)?'1':'0.'+opa;
+}
+
+if(opa==10){clearTimeout(sett)}
+else{sett = setTimeout('fade()',delay)}
+}
+//-->
+</script>
+
+ein.

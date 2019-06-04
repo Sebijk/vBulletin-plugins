@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="sjblendtrans" active="1">
+	<title>Überblendeffekt</title>
+	<description>Blendet einen Überblendeffekt im Forum ein, wenn man auf Seiten wechselt.</description>
+	<version>1.2</version>
+	<url>http://www.sebijk.com</url>
+	<versioncheckurl>http://www.sebijk.com/productcheck/vbhacks/sjblendtrans.php</versioncheckurl>
+	<dependencies>
+	</dependencies>
+	<codes>
+		<code version="*">
+			<installcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	install_templateedits($info, $arr, $active);
+}]]></installcode>
+			<uninstallcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	uninstall_templateedits($vbulletin->GPC['productid']);
+}]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+	</templates>
+	<plugins>
+	</plugins>
+	<phrases>
+		<phrasetype name="vBulletin-Einstellungen" fieldname="vbsettings">
+			<phrase name="setting_blendtrans_ff_sec_desc" date="1204471709" username="Sebijk" version="1.2"><![CDATA[Geben Sie hier ein, wie lange der Überblendeffekt erscheinen soll (Nur für Firefox und Browser auf Gecko-Basis).]]></phrase>
+			<phrase name="setting_blendtrans_ff_sec_title" date="1204471709" username="Sebijk" version="1.2"><![CDATA[Milisekunden (Firefox und Gecko)]]></phrase>
+			<phrase name="setting_blendtrans_sec_desc" date="1204471623" username="Sebijk" version="1.2"><![CDATA[Geben Sie hier ein, wie lange der Überblendeffekt erscheinen soll (Nur für Internet Explorer).]]></phrase>
+			<phrase name="setting_blendtrans_sec_title" date="1204471623" username="Sebijk" version="1.2"><![CDATA[Sekunden (Internet Explorer)]]></phrase>
+			<phrase name="settinggroup_blendtrans" date="1204471556" username="Sebijk" version="1.2"><![CDATA[Überblendeffekt-Einstellungen]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="blendtrans" displayorder="65535">
+			<setting varname="blendtrans_sec" displayorder="10">
+				<datatype>free</datatype>
+				<defaultvalue>2</defaultvalue>
+			</setting>
+			<setting varname="blendtrans_ff_sec" displayorder="20">
+				<datatype>free</datatype>
+				<defaultvalue>80</defaultvalue>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<templateedits>
+		<templateedit template="headinclude" varname="code_blendtrans" username="Sebijk" version="3.7.0 Beta 1" dateline="1204471536" searchorder="5" active="1">
+			<title>Überblendeffekt</title>
+			<searchstr><![CDATA[<!-- CSS Stylesheet -->]]></searchstr>
+			<replacestr><![CDATA[<meta http-equiv="Page-Enter" content="blendTrans(Duration=$vboptions[blendtrans_sec])" />
+<meta http-equiv="Page-Exit" content="blendTrans(Duration=$vboptions[blendtrans_sec])" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<script type="text/javascript">
+<!--
+var delay = $vboptions[blendtrans_ff_sec];
+var opa=0;
+var sett;
+onload=function(){
+setTimeout('fade()',delay);
+}
+function fade(){
+opa++;
+var obj = document.getElementsByTagName('html');
+
+if(window.sidebar){//Moz
+obj[0].style.MozOpacity=(opa==10)?'1':'0.'+opa;
+}
+
+if(opa==10){clearTimeout(sett)}
+else{sett = setTimeout('fade()',delay)}
+}
+//-->
+</script>
+
+<!-- CSS Stylesheet -->]]></replacestr>
+		</templateedit>
+	</templateedits>
+</product>
