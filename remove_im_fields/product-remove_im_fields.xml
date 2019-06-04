@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="remove_im_fields" active="1">
+	<title>Remove Instant Messaging Fields</title>
+	<description>Removes all hardcoded Instant Messaging Fields in vBulletin</description>
+	<version>1.0.0</version>
+	<url />
+	<versioncheckurl />
+	<dependencies>
+	</dependencies>
+	<codes>
+		<code version="*">
+			<installcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	install_templateedits($info, $arr, $active);
+}
+
+echo "<br />Removing Instant Messenger Fields...<br />";
+vbflush();
+$db->query_write("UPDATE ".TABLE_PREFIX."user SET icq = '',aim = '',msn = '', yahoo = '', skype = '';"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE icq icq VARCHAR( 0 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE aim aim VARCHAR( 0 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE yahoo yahoo VARCHAR( 0 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE msn msn VARCHAR( 0 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE skype skype VARCHAR( 0 )");]]></installcode>
+			<uninstallcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	uninstall_templateedits($vbulletin->GPC['productid']);
+}
+
+echo "<br />Restoring Instant Messenger Fields...<br />";
+vbflush();
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE icq icq VARCHAR( 20 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE aim aim VARCHAR( 20 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE yahoo yahoo VARCHAR( 32 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE msn msn VARCHAR( 100 )"); 
+$db->query_write("ALTER TABLE ".TABLE_PREFIX."user CHANGE skype skype VARCHAR( 32 )");]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+	</templates>
+	<plugins>
+		<plugin active="1" executionorder="1">
+			<title>Remove Instant Messaging Fields in Profile</title>
+			<hookname>member_profileblock_fetch_unwrapped</hookname>
+			<phpcode><![CDATA[if ($id == 'contactinfo')
+{
+    $prepared['hasimicons'] = false;
+    $prepared['hasimdetails'] = false;
+    unset($block_data['imbits']);
+}]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+	</phrases>
+	<options>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<templateedits>
+		<templateedit template="MEMBERINFO" varname="remove_im_memberinfo" username="Sebijk" version="3.7.0 Release Candidate 1" dateline="1222283446" searchorder="5" active="1">
+			<title>Remove Instant Messaging in Profile Menu</title>
+			<searchstr><![CDATA[<if condition="$prepared['hasimdetails']">
+					<li class="thead<if condition="!$show['post_visitor_message'] AND !$show['pm'] AND !$show['email']"> first</if>">$vbphrase[instant_messaging]</li>
+					<if condition="$prepared['icq']">
+						<li class="vbmenu_option"><img class="alt2 inlineimg" alt="" src="$stylevar[imgdir_misc]/im_icq.gif" />  <a href="#" dir="ltr" onclick="imwindow('icq', '$prepared[userid]', 500, 450); return false;"><phrase 1="$prepared[username]">$vbphrase[send_icq_message_to_x]</phrase></a></li>
+					</if>
+					<if condition="$prepared['aim']">
+						<li class="vbmenu_option"><img class="alt2 inlineimg" alt="" src="$stylevar[imgdir_misc]/im_aim.gif" /> <a href="#" dir="ltr" onclick="imwindow('aim', '$prepared[userid]', 400, 200); return false;"><phrase 1="$prepared[username]">$vbphrase[send_aim_message_to_x]</phrase></a></li>
+					</if>
+					<if condition="$prepared['msn']">
+						<li class="vbmenu_option"><img class="alt2 inlineimg" alt="" src="$stylevar[imgdir_misc]/im_msn.gif" /> <a href="#" dir="ltr" onclick="imwindow('msn', '$prepared[userid]', 400, 200); return false;"><phrase 1="$prepared[username]">$vbphrase[send_msn_message_to_x]</phrase></a></li>
+					</if>
+					<if condition="$prepared['yahoo']">
+						<li class="vbmenu_option"><img src="$stylevar[imgdir_misc]/im_yahoo.gif" alt="" class="alt2 inlineimg" /> <a href="#" dir="ltr" onclick="imwindow('yahoo', '$prepared[userid]', 400, 200); return false;"><phrase 1="$prepared[username]">$vbphrase[send_yahoo_message_to_x]</phrase></a></li>
+					</if>
+					<if condition="$prepared['skype']">
+						<li class="vbmenu_option"><img src="$stylevar[imgdir_misc]/im_skype.gif" alt="" class="alt2 inlineimg" /> <a href="#" dir="ltr" onclick="imwindow('skype', '$prepared[userid]', 400, 285); return false;"><phrase 1="$prepared[username]">$vbphrase[send_skype_message_to_x]</phrase></a></li>
+					</if>
+				</if>]]></searchstr>
+			<replacestr />
+		</templateedit>
+		<templateedit template="memberlist_resultsbit" varname="remove_im_memberlist_resb" username="Sebijk" version="3.5.2" dateline="1222284830" searchorder="5" active="1">
+			<title>Remove Instant Messaging Fields in Member List</title>
+			<searchstr><![CDATA[<if condition="$show['imicons'] AND exec_switch_bg()"><td class="$bgclass">$userinfo[icqicon] $userinfo[aimicon] $userinfo[msnicon] $userinfo[yahooicon] $userinfo[skypeicon]</td></if>]]></searchstr>
+			<replacestr />
+		</templateedit>
+		<templateedit template="modifyprofile" varname="remove_im_modifyprofile" username="Sebijk" version="3.7.0 Release Candidate 4" dateline="1222283315" searchorder="5" active="1">
+			<title>Remove Instant Messaging Fields in UserCP</title>
+			<searchstr><![CDATA[			<fieldset class="fieldset">
+				<legend>$vbphrase[instant_messaging]</legend>
+				<table cellpadding="0" cellspacing="$stylevar[formspacer]" border="0" width="100%">
+				<tr>
+					<td colspan="2">$vbphrase[may_enter_identity_for_im]</td>
+				</tr>
+				<tr>
+					<td>$vbphrase[icq_number]<br />
+						<img src="$stylevar[imgdir_misc]/im_icq.gif" alt="" />
+						<input type="text" class="bginput" name="icq" value="$bbuserinfo[icq]" size="25" maxlength="30" dir="ltr" /></td>
+					<td>$vbphrase[aim_screen_name]<br />
+						<img src="$stylevar[imgdir_misc]/im_aim.gif" alt="" />
+						<input type="text" class="bginput" name="aim" value="$bbuserinfo[aim]" size="25" maxlength="30" dir="ltr" /></td>
+				</tr>
+				<tr>
+					<td>$vbphrase[msn_messenger_handle]<br />
+						<img src="$stylevar[imgdir_misc]/im_msn.gif" alt="" />
+						<input type="text" class="bginput" name="msn" value="$bbuserinfo[msn]" size="25" maxlength="50" dir="ltr" /></td>
+					<td>$vbphrase[yahoo_messenger_handle]<br />
+						<img src="$stylevar[imgdir_misc]/im_yahoo.gif" alt="" />
+						<input type="text" class="bginput" name="yahoo" value="$bbuserinfo[yahoo]" size="25" maxlength="30" dir="ltr" /></td>
+				</tr>
+				<tr>
+					<td>$vbphrase[skype_name]<br />
+						<img src="$stylevar[imgdir_misc]/im_skype.gif" alt="" />
+						<input type="text" class="bginput" name="skype" value="$bbuserinfo[skype]" size="25" maxlength="32" dir="ltr" /></td>
+					<td>&nbsp;</td>
+				</tr>
+				</table>
+			</fieldset>]]></searchstr>
+			<replacestr />
+		</templateedit>
+		<templateedit template="postbit" varname="remove_im_postbit" username="Sebijk" version="3.7.0 Release Candidate 4" dateline="1222284052" searchorder="5" active="1">
+			<title>Remove Instant Messaging Fields in Postbit</title>
+			<searchstr><![CDATA[<div>$post[icqicon] $post[aimicon] $post[msnicon] $post[yahooicon] $post[skypeicon]</div>]]></searchstr>
+			<replacestr />
+		</templateedit>
+		<templateedit template="postbit_legacy" varname="remove_im_postbit_legacy" username="Sebijk" version="3.7.0 Release Candidate 4" dateline="1222283940" searchorder="5" active="1">
+			<title>Remove Instant Messaging Fields in Posbit legacy</title>
+			<searchstr><![CDATA[<div>$post[icqicon] $post[aimicon] $post[msnicon] $post[yahooicon] $post[skypeicon]</div>]]></searchstr>
+			<replacestr />
+		</templateedit>
+		<templateedit template="whosonlinebit" varname="remove_im_whosonlinebit" username="Sebijk" version="3.6.0 Beta 1" dateline="1222283180" searchorder="5" active="1">
+			<title>Remove Instant Messaging Fields in Whos online</title>
+			<searchstr><![CDATA[			$userinfo[aimicon]
+			$userinfo[icqicon]
+			$userinfo[msnicon]
+			$userinfo[yahooicon]
+			$userinfo[skypeicon]]]></searchstr>
+			<replacestr />
+		</templateedit>
+	</templateedits>
+</product>
