@@ -1,0 +1,283 @@
+Sebijks SEO
+================================================================================
+Version: 0.4.5
+URL: http://www.sebijk.com
+
+Führen Sie die nachfolgend aufgeführten Template-Modifikationen aus:
+
+Suchen Sie im Template forumhome_forumbit_level1_nopost den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template showthread_similarthreadbit den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]t=$simthread[threadid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">thread-$simthread[threadid].html$session[sessionurl_q]<else />showthread.php?$session[sessionurl]t=$simthread[threadid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template SHOWTHREAD_SHOWPOST den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]p=$postinfo[postid]#post$postinfo[postid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">post-$postinfo[postid].html$session[sessionur_ql]#post$postinfo[postid]<else />showthread.php?$session[sessionurl]p=$postinfo[postid]#post$postinfo[postid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template FORUMDISPLAY den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$foruminfo[parentid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$foruminfo[parentid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$foruminfo[parentid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template threadbit den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$thread[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$thread[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$thread[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template threadbit den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]t=$thread[threadid]&amp;page=$thread[totalpages]$thread[highlight]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']"><if condition="$thread[highlight]">thread-$thread[threadid]-page-$thread[totalpages].html?$session[sessionurl]$thread[highlight]<else />thread-$thread[threadid]-page-$thread[totalpages].html$session[sessionurl_q]</if><else />showthread.php?$session[sessionurl]t=$thread[threadid]&amp;page=$thread[totalpages]$thread[highlight]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_lastpostby den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">thread-post-$lastpostinfo[lastpostid].html$session[sessionurl_q]<else />showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template SHOWTHREAD den folgenden Text
+--------------------------------------------------------------------------------
+$navbar
+--------------------------------------------------------------------------------
+
+Fügen Sie darunter den folgenden Text ein
+--------------------------------------------------------------------------------
+<center><h1>$thread[title]</h1></center><br />
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template FORUMDISPLAY den folgenden Text
+--------------------------------------------------------------------------------
+$navbar
+--------------------------------------------------------------------------------
+
+Fügen Sie darunter den folgenden Text ein
+--------------------------------------------------------------------------------
+<center><h1>$foruminfo[title]</h1></center><br />
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template postbit den folgenden Text
+--------------------------------------------------------------------------------
+<if condition="$show['postcount']">#<a href="showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$show['postcount']">#<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid]-$post[postcount].html$session[sessionurl_q]<else />showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]</if>" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>
+<if condition="$post[threadid]">(<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid].html$session[sessionurl_q]#post$post[postid]<else />showthread.php?$session[sessionurl]p=$post[postid]#post$post[postid]</if>" rel="nofollow" name="permalink" ><strong>permalink</strong></a>) &nbsp;</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template postbit_legacy den folgenden Text
+--------------------------------------------------------------------------------
+<if condition="$show['postcount']">#<a href="showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a></if>
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$show['postcount']">#<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid]-$post[postcount].html$session[sessionurl_q]<else />showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]</if>" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>
+<if condition="$post[threadid]">(<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid].html$session[sessionurl_q]#post$post[postid]<else />showthread.php?$session[sessionurl]p=$post[postid]#post$post[postid]</if>" rel="nofollow" name="permalink" ><strong>permalink</strong></a>) &nbsp;</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_forumbit_level1_post den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template headinclude den folgenden Text
+--------------------------------------------------------------------------------
+<!-- CSS Stylesheet -->
+--------------------------------------------------------------------------------
+
+Fügen Sie darüber den folgenden Text ein
+--------------------------------------------------------------------------------
+<if condition="$vboptions[sjseo_pagetype]"><meta name="page-type" content="$vboptions[sjseo_pagetype]" /></if>
+<if condition="$vboptions[sjseo_pagetopic]"><meta name="page-topic" content="$vboptions[sjseo_pagetopic]" /></if>
+<if condition="$vboptions[sjseo_botvisits] OR !$vboptions[sjseo_botvisits]=='0'"><meta name="revisit-after" content="$vboptions[sjseo_botvisits]" /></if>
+<if condition="$vboptions[sjseo_audience]"><meta name="audience" content="$vboptions[sjseo_audience]" /></if>
+<if condition="$vboptions[sjseo_metacopyright]"><meta name="Copyright" content="$vboptions[sjseo_metacopyright]" /></if>
+<meta name="publisher" content="$vboptions[bbtitle]" />
+<meta name="Content-Language" content="$stylevar[languagecode]" />
+<meta name="author" content="$vboptions[bbtitle]" />
+<link rel="index" title="$vbphrase[forums_home]" href="$vboptions[forumhome].php$session[sessionurl_q]" />
+<link rel="search" title="$vbphrase[search]" href="search.php$session[sessionurl_q]" />
+<link rel="help" title="$vbphrase[faq]" href="faq.php$session[sessionurl_q]" />
+--------------------------------------------------------------------------------
+
+
+
+
+Suchen Sie im Template SHOWTHREAD den folgenden Text
+--------------------------------------------------------------------------------
+$vboptions[bbtitle]</title>
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+$foruminfo[title_clean]</title>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template FORUMDISPLAY den folgenden Text
+--------------------------------------------------------------------------------
+$footer
+--------------------------------------------------------------------------------
+
+Fügen Sie darüber den folgenden Text ein
+--------------------------------------------------------------------------------
+<a href="archive/index.php/f-$foruminfo[forumid].html">$vbphrase[show_as_forum_archive_page]</a>
+--------------------------------------------------------------------------------
+
+
+
+
+Suchen Sie im Template forumhome_forumbit_level2_nopost den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_forumbit_level2_post den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template threadbit den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]t=$thread[threadid]$thread[highlight]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']"><if condition="$thread[highlight]">thread-$thread[threadid].html?$session[sessionurl]$thread[highlight]
+<else />thread-$thread[threadid].html$session[sessionurl_q]</if><else />showthread.php?$session[sessionurl]t=$thread[threadid]$thread[highlight]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_lastpostby den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]goto=newpost&amp;t=$lastpostinfo[lastthreadid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">newest-post-$lastpostinfo[lastthreadid].html$session[sessionurl_ql]<else />showthread.php?$session[sessionurl]goto=newpost&amp;t=$lastpostinfo[lastthreadid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_lastpostby den folgenden Text
+--------------------------------------------------------------------------------
+showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]#post$lastpostinfo[lastpostid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">post-$lastpostinfo[lastpostid].html$session[sessionur_ql]#post$lastpostinfo[lastpostid]<else />showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]#post$lastpostinfo[lastpostid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_subforumbit_nopost den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------
+
+
+
+Suchen Sie im Template forumhome_subforumbit_post den folgenden Text
+--------------------------------------------------------------------------------
+forumdisplay.php?$session[sessionurl]f=$forum[forumid]
+--------------------------------------------------------------------------------
+
+Ersetzen Sie diesen durch
+--------------------------------------------------------------------------------
+<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>
+--------------------------------------------------------------------------------

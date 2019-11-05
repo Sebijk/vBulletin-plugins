@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="sebijk_seotms" active="1">
+	<title>Sebijks SEO</title>
+	<description>Macht ihr Forum mithilfe von TMS suchmaschinenfreundlicher.</description>
+	<version>0.4.5</version>
+	<url>http://www.sebijk.com</url>
+	<versioncheckurl></versioncheckurl>
+	<dependencies>
+		<dependency dependencytype="product" parentproductid="tms" minversion="1.0.0" maxversion="" />
+	</dependencies>
+	<codes>
+		<code version="*">
+			<installcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	install_templateedits($info, $arr, $active);
+}]]></installcode>
+			<uninstallcode><![CDATA[if ($vbulletin->products['tms'])
+{
+	require_once(DIR . '/includes/adminfunctions_templateedits.php');
+	uninstall_templateedits($vbulletin->GPC['productid']);
+}]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+	</templates>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Sebijks SEO: Archiv</title>
+			<hookname>archive_complete</hookname>
+			<phpcode><![CDATA[/**
+* Sebijks SEO for vBulletin
+* Copyright (c) 2006 - 2008 by Sebijk
+* http://www.sebijk.com
+**/
+
+$output = str_replace("<title>$title</title>", "<meta name=\"robots\" content=\"index, follow\" />\n	<meta name=\"publisher\" content=\"".$vbulletin->options['bbtitle']."\" />\n	<title>$title</title>", $output);
+
+// H1-Tag einfuegen
+if($vbulletin->options['sjseo_urlrewrite'] == 1) 
+{
+	$output = str_replace("showthread.php?t=$threadinfo[threadid]\">$threadinfo[title]</a></p>\n<hr />\n", "thread-$threadinfo[threadid].html\">$threadinfo[title]</a></p>\n<hr />\n<center><a href=\"" . $vbulletin->options['bburl'] . "/thread-$threadinfo[threadid].html\"><h1>$threadinfo[title]</h1></a></center><br />", $output);
+
+	$output = str_replace("forumdisplay.php?f=$foruminfo[forumid]\">$foruminfo[title_clean]</a></p>\n<hr />\n", "forum-$foruminfo[forumid].html\">$foruminfo[title_clean]</a></p>\n<hr />\n<center><a href=\"" . $vbulletin->options['bburl'] . "/forum-$foruminfo[forumid].html\"><h1>$foruminfo[title_clean]</h1></a></center><br />", $output);
+}
+else 
+{
+	$output = str_replace("showthread.php?t=$threadinfo[threadid]\">$threadinfo[title]</a></p>\n<hr />\n", "showthread.php?t=$threadinfo[threadid]\">$threadinfo[title]</a></p>\n<hr />\n<center><a href=\"" . $vbulletin->options['bburl'] . "/showthread.php?t=$threadinfo[threadid]\"><h1>$threadinfo[title]</h1></a></center><br />", $output);
+
+	$output = str_replace("forumdisplay.php?f=$foruminfo[forumid]\">$foruminfo[title_clean]</a></p>\n<hr />\n", "forumdisplay.php?f=$foruminfo[forumid]\">$foruminfo[title_clean]</a></p>\n<hr />\n<center><a href=\"" . $vbulletin->options['bburl'] . "/forumdisplay.php?f=$foruminfo[forumid]\"><h1>$foruminfo[title_clean]</h1></a></center><br />", $output);
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Sebijks SEO: Orte zuweisen</title>
+			<hookname>online_location_process</hookname>
+			<phpcode><![CDATA[/**
+* Sebijks SEO for vBulletin
+* Copyright (c) 2006 - 2008 by Sebijk
+* http://www.sebijk.com
+**/
+
+if(preg_match('/thread-(.*).html/i', $filename, $wolmatch)) $userinfo['activity'] = 'showthread_sjseo';
+
+if(preg_match('/post-(.*).html/i', $filename, $wolmatch)) $userinfo['activity'] = 'showthread_sjseo';
+
+if(preg_match('/forum-(.*).html/i', $filename, $wolmatch)) $userinfo['activity'] = 'forumdisplay_sjseo';
+
+if(preg_match('/project-(.*).html/i', $filename, $wolmatch)) $userinfo['activity'] = 'projecttools';
+
+if(preg_match('/project-issue-(.*).html/i', $filename, $wolmatch)) $userinfo['activity'] = 'projecttools';]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Sebijks SEO: Orte konfigurieren</title>
+			<hookname>online_location_unknown</hookname>
+			<phpcode><![CDATA[/**
+* Sebijks SEO for vBulletin
+* Copyright (c) 2006 - 2008 by Sebijk
+* http://www.sebijk.com
+**/
+
+if($userinfo['activity']=='forumdisplay_sjseo')
+{
+    $userinfo['where'] = '<a href="'.$userinfo['location'].'">'.$userinfo['location'].'</a>';
+    $userinfo['action'] = $vbphrase['viewing_forum'];
+    $handled = true;
+}
+if($userinfo['activity']=='showthread_sjseo')
+{
+    $userinfo['where'] = '<a href="'.$userinfo['location'].'">'.$userinfo['location'].'</a>';
+    $userinfo['action'] = $vbphrase['viewing_thread'];
+    $handled = true;
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Sebijks SEO: Letzter Beitrag</title>
+			<hookname>showthread_start</hookname>
+			<phpcode><![CDATA[/**
+* Sebijks SEO for vBulletin
+* Copyright (c) 2006 - 2008 by Sebijk
+* http://www.sebijk.com
+**/
+
+// *********************************************************************************
+if($vbulletin->options['sjseo_urlrewrite'] == 1)
+{
+	// goto newest unread post
+	if ($vbulletin->GPC['goto'] == 'newpost')
+	{
+		$threadinfo = verify_id('thread', $threadid, 1, 1);
+
+		if ($vbulletin->options['threadmarking'] AND $vbulletin->userinfo['userid'])
+		{
+			$vbulletin->userinfo['lastvisit'] = max($threadinfo['threadread'], $threadinfo['forumread'], TIMENOW - ($vbulletin->options['markinglimit'] * 86400));
+		}
+		else if (($tview = intval(fetch_bbarray_cookie('thread_lastview', $threadid))) > $vbulletin->userinfo['lastvisit'])
+		{
+			$vbulletin->userinfo['lastvisit'] = $tview;
+		}
+
+		$coventry = fetch_coventry('string');
+		$posts = $db->query_first("
+			SELECT MIN(postid) AS postid
+			FROM " . TABLE_PREFIX . "post
+			WHERE threadid = $threadinfo[threadid]
+				AND visible = 1
+				AND dateline > " . intval($vbulletin->userinfo['lastvisit']) . "
+				". ($coventry ? "AND userid NOT IN ($coventry)" : "") . "
+			LIMIT 1
+		");
+		if ($posts['postid'] AND $vbulletin->session->vars['sessionurl_js'])
+		{
+			exec_header_redirect('post-'. $posts['postid'] . ".html?". $vbulletin->session->vars['sessionurl_js']. "$highlightwords#post$posts[postid]");
+		}
+		elseif ($posts['postid'] AND $highlightwords)
+		{
+			exec_header_redirect('post-'. $posts['postid'] . ".html?$highlightwords#post$posts[postid]");
+		}
+		elseif (!empty($posts['postid']))
+		{
+			exec_header_redirect('post-'. $posts['postid'] . ".html#post$posts[postid]");
+		}
+		elseif ($vbulletin->session->vars['sessionurl_js'])
+		{
+			exec_header_redirect('post-' . $threadinfo['lastpostid'] . ".html?" . $vbulletin->session->vars['sessionurl_js'] . "$highlightwords#post$threadinfo[lastpostid]");
+		}
+		elseif (!empty($highlightwords))
+		{
+			exec_header_redirect('post-' . $threadinfo['lastpostid'] . ".html?$highlightwords#post$threadinfo[lastpostid]");
+		}
+		else
+		{
+			exec_header_redirect('post-' . $threadinfo['lastpostid'] . ".html#post$threadinfo[lastpostid]");
+		}
+	}
+}
+// *********************************************************************************]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+		<phrasetype name="Forum Display" fieldname="forumdisplay">
+			<phrase name="show_as_forum_archive_page" date="1224351299" username="Sebijk" version="0.4.4"><![CDATA[Als Forenarchiv-Seite anzeigen]]></phrase>
+		</phrasetype>
+		<phrasetype name="vBulletin-Einstellungen" fieldname="vbsettings">
+			<phrase name="settinggroup_sjseo_settings" date="1170688625" username="Sebijk" version="1.0"><![CDATA[Sebijks SEO-Einstellungen]]></phrase>
+			<phrase name="setting_sjseo_audience_desc" date="1204230291" username="Sebijk" version="0.4.1"><![CDATA[Hier k&ouml;nnen Sie die Zielgruppe Ihrer Seite festlegen.]]></phrase>
+			<phrase name="setting_sjseo_audience_title" date="1204230291" username="Sebijk" version="0.4.1"><![CDATA[Zielgruppe (audience)]]></phrase>
+			<phrase name="setting_sjseo_botvisits_desc" date="1204230195" username="Sebijk" version="0.4.1"><![CDATA[Wie oft soll der Suchmaschinen-Bot wiederkommen?<br />
+Wenn in Ihrem Forum wenig los ist, sollten Sie den Wert h&ouml;her einstellen, wenn in Ihrem Forum viel los ist, k&ouml;nnen Sie hier einen niedrigen Wert eingeben. Bitte beachten Sie: H&auml;ufig,  wenn der Bot diesem Befehl folgt, aber am Forum nichts ge&auml;ndert hat, kann es eventuell sein, dass er beim n&auml;chsten mal den Befehl oder sogar die ganze Seite ignorieren k&ouml;nnte!
+<p class="smallfont" />
+Wenn Sie hier 0 oder nichts eingeben, wird dieser Meta-Tag deaktiviert.
+<p class="smallfont" />
+Beispiel: 15 Days  oder 2 Month.
+<br />Erkl&auml;rung: Day = Tag |
+Days = Tage |
+Month = Monate |
+Year = Jahr |
+Years = Jahre]]></phrase>
+			<phrase name="setting_sjseo_botvisits_title" date="1204230195" username="Sebijk" version="0.4.1"><![CDATA[Bot-Besuche (revisit-after)]]></phrase>
+			<phrase name="setting_sjseo_metacopyright_desc" date="1205965455" username="Sebijk" version="0.4.2"><![CDATA[Hier k&ouml;nnen Sie Ihr Copyright des Forums/der Site eingeben.]]></phrase>
+			<phrase name="setting_sjseo_metacopyright_title" date="1205965455" username="Sebijk" version="0.4.2"><![CDATA[Copyright (meta)]]></phrase>
+			<phrase name="setting_sjseo_pagetopic_desc" date="1204230216" username="Sebijk" version="0.4.1"><![CDATA[Unter welchem Thema steht das Forum?
+Mehrfachnennungen m&ouml;glich, Trennungen durch Kommas, eigene Begriffe m&ouml;glich.]]></phrase>
+			<phrase name="setting_sjseo_pagetopic_title" date="1204230216" username="Sebijk" version="0.4.1"><![CDATA[Thema (page-topic)]]></phrase>
+			<phrase name="setting_sjseo_pagetype_desc" date="1204230205" username="Sebijk" version="0.4.1"><![CDATA[Was f&uuml;r ein Typus ist dieses Forum?
+Mehrfachnennungen m&ouml;glich, Trennungen durch Kommas, eigene Begriffe m&ouml;glich.]]></phrase>
+			<phrase name="setting_sjseo_pagetype_title" date="1204230205" username="Sebijk" version="0.4.1"><![CDATA[Seitentyp (page-type)]]></phrase>
+			<phrase name="setting_sjseo_urlrewrite_desc" date="1204230185" username="Sebijk" version="0.4.1"><![CDATA[Wenn Sie diese Option aktivieren, werden die Themen (showthread.php) und Foren (forumdisplay.php)-URLs in ein Suchmaschinenfreundliches Format umgeschrieben.
+<br /><br />
+<b>Diese Option ben&ouml;tigt unbedingt das mod_rewrite-Modul. Stellen Sie auch sicher, dass Sie .htaccess-Dateien ausf&uuml;hren k&ouml;nnen.</b>]]></phrase>
+			<phrase name="setting_sjseo_urlrewrite_title" date="1204230185" username="Sebijk" version="0.4.1"><![CDATA[URL-Umschreibung aktivieren?]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+		<settinggroup name="sjseo_settings" displayorder="65535">
+			<setting varname="sjseo_urlrewrite" displayorder="10">
+				<datatype>free</datatype>
+				<optioncode>yesno</optioncode>
+				<defaultvalue>1</defaultvalue>
+			</setting>
+			<setting varname="sjseo_botvisits" displayorder="20">
+				<datatype>free</datatype>
+				<defaultvalue>0</defaultvalue>
+			</setting>
+			<setting varname="sjseo_pagetype" displayorder="30">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="sjseo_pagetopic" displayorder="40">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="sjseo_audience" displayorder="50">
+				<datatype>free</datatype>
+			</setting>
+			<setting varname="sjseo_metacopyright" displayorder="60">
+				<datatype>free</datatype>
+			</setting>
+		</settinggroup>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<templateedits>
+		<templateedit template="forumhome_forumbit_level1_nopost" varname="sjseo_1" username="Sebijk" version="3.6.8" dateline="1204227822" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 1</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="showthread_similarthreadbit" varname="sjseo_10" username="Sebijk" version="3.7.0 Beta 1" dateline="1204228794" searchorder="5" active="1">
+			<title>Sebijks SEO: Aehnliche Themen</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]t=$simthread[threadid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">thread-$simthread[threadid].html$session[sessionurl_q]<else />showthread.php?$session[sessionurl]t=$simthread[threadid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="SHOWTHREAD_SHOWPOST" varname="sjseo_11" username="Sebijk" version="3.7.0 Beta 1" dateline="1204228725" searchorder="5" active="1">
+			<title>Sebijks SEO: Letzter Beitrag 3</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]p=$postinfo[postid]#post$postinfo[postid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">post-$postinfo[postid].html$session[sessionur_ql]#post$postinfo[postid]<else />showthread.php?$session[sessionurl]p=$postinfo[postid]#post$postinfo[postid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="FORUMDISPLAY" varname="sjseo_12" username="Sebijk" version="3.7.0 Beta 5" dateline="1204227832" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenansicht 1</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$foruminfo[parentid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$foruminfo[parentid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$foruminfo[parentid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="threadbit" varname="sjseo_13" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228949" searchorder="5" active="1">
+			<title>Sebijks SEO: Themenansicht 3</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$thread[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$thread[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$thread[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="threadbit" varname="sjseo_14" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228905" searchorder="5" active="1">
+			<title>Sebijks SEO: Themenansicht 2</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]t=$thread[threadid]&amp;page=$thread[totalpages]$thread[highlight]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']"><if condition="$thread[highlight]">thread-$thread[threadid]-page-$thread[totalpages].html?$session[sessionurl]$thread[highlight]<else />thread-$thread[threadid]-page-$thread[totalpages].html$session[sessionurl_q]</if><else />showthread.php?$session[sessionurl]t=$thread[threadid]&amp;page=$thread[totalpages]$thread[highlight]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_lastpostby" varname="sjseo_15" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228305" searchorder="5" active="1">
+			<title>Sebijks SEO: Letzter Beitrag 3</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">thread-post-$lastpostinfo[lastpostid].html$session[sessionurl_q]<else />showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="SHOWTHREAD" varname="sjseo_16" username="Sebijk" version="3.7.0 Beta 1" dateline="1166794981" searchorder="5" active="1">
+			<title>Sebijks SEO: H1-Tag in der Themananzeige</title>
+			<searchstr>$navbar</searchstr>
+			<replacestr><![CDATA[$navbar
+<center><h1>$thread[title]</h1></center><br />]]></replacestr>
+		</templateedit>
+		<templateedit template="FORUMDISPLAY" varname="sjseo_17" username="Sebijk" version="3.7.0 Beta 5" dateline="1166703519" searchorder="5" active="1">
+			<title>Sebijks SEO: H1-Tag in der Forenansicht</title>
+			<searchstr>$navbar</searchstr>
+			<replacestr><![CDATA[$navbar
+<center><h1>$foruminfo[title]</h1></center><br />]]></replacestr>
+		</templateedit>
+		<templateedit template="postbit" varname="sjseo_18" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228619" searchorder="5" active="1">
+			<title>Sebijks SEO: permalinks (postbit)</title>
+			<searchstr><![CDATA[<if condition="$show['postcount']">#<a href="showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>]]></searchstr>
+			<replacestr><![CDATA[<if condition="$show['postcount']">#<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid]-$post[postcount].html$session[sessionurl_q]<else />showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]</if>" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>
+<if condition="$post[threadid]">(<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid].html$session[sessionurl_q]#post$post[postid]<else />showthread.php?$session[sessionurl]p=$post[postid]#post$post[postid]</if>" rel="nofollow" name="permalink" ><strong>permalink</strong></a>) &nbsp;</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="postbit_legacy" varname="sjseo_19" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228694" searchorder="5" active="1">
+			<title>Sebijks SEO: permalinks (postbit_legacy)</title>
+			<searchstr><![CDATA[<if condition="$show['postcount']">#<a href="showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a></if>]]></searchstr>
+			<replacestr><![CDATA[<if condition="$show['postcount']">#<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid]-$post[postcount].html$session[sessionurl_q]<else />showpost.php?$session[sessionurl]p=$post[postid]&amp;postcount=$post[postcount]</if>" target="new" rel="nofollow" id="postcount$post[postid]" name="$post[postcount]"><strong>$post[postcount]</strong></a> &nbsp;</if>
+<if condition="$post[threadid]">(<a href="<if condition="$vboptions['sjseo_urlrewrite']">post-$post[postid].html$session[sessionurl_q]#post$post[postid]<else />showthread.php?$session[sessionurl]p=$post[postid]#post$post[postid]</if>" rel="nofollow" name="permalink" ><strong>permalink</strong></a>) &nbsp;</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_forumbit_level1_post" varname="sjseo_2" username="Sebijk" version="3.7.0 Beta 1" dateline="1204227862" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 2</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="headinclude" varname="sjseo_20" username="Sebijk" version="3.7.0 Release Candidate 4" dateline="1224350041" searchorder="5" active="1">
+			<title>Sebijks SEO: Meta-Tags</title>
+			<searchstr><![CDATA[<!-- CSS Stylesheet -->]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions[sjseo_pagetype]"><meta name="page-type" content="$vboptions[sjseo_pagetype]" /></if>
+<if condition="$vboptions[sjseo_pagetopic]"><meta name="page-topic" content="$vboptions[sjseo_pagetopic]" /></if>
+<if condition="$vboptions[sjseo_botvisits] OR !$vboptions[sjseo_botvisits]=='0'"><meta name="revisit-after" content="$vboptions[sjseo_botvisits]" /></if>
+<if condition="$vboptions[sjseo_audience]"><meta name="audience" content="$vboptions[sjseo_audience]" /></if>
+<if condition="$vboptions[sjseo_metacopyright]"><meta name="Copyright" content="$vboptions[sjseo_metacopyright]" /></if>
+<meta name="publisher" content="$vboptions[bbtitle]" />
+<meta name="Content-Language" content="$stylevar[languagecode]" />
+<meta name="author" content="$vboptions[bbtitle]" />
+<link rel="index" title="$vbphrase[forums_home]" href="$vboptions[forumhome].php$session[sessionurl_q]" />
+<link rel="search" title="$vbphrase[search]" href="search.php$session[sessionurl_q]" />
+<link rel="help" title="$vbphrase[faq]" href="faq.php$session[sessionurl_q]" />
+<!-- CSS Stylesheet -->]]></replacestr>
+		</templateedit>
+		<templateedit template="SHOWTHREAD" varname="sjseo_21" username="Sebijk" version="3.7.0 Beta 1" dateline="1176479319" searchorder="5" active="1">
+			<title>Sebijks SEO: Thementitel in title-Tag ersetzen</title>
+			<searchstr><![CDATA[$vboptions[bbtitle]</title>]]></searchstr>
+			<replacestr><![CDATA[$foruminfo[title_clean]</title>]]></replacestr>
+		</templateedit>
+		<templateedit template="FORUMDISPLAY" varname="sjseo_22" username="Sebijk" version="3.8.0 Alpha 2" dateline="1224351354" searchorder="5" active="1">
+			<title>Sitemap zu ForumDisplay</title>
+			<searchstr>$footer</searchstr>
+			<replacestr><![CDATA[<a href="archive/index.php/f-$foruminfo[forumid].html">$vbphrase[show_as_forum_archive_page]</a>
+$footer]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_forumbit_level2_nopost" varname="sjseo_3" username="Sebijk" version="" dateline="1204227988" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 3</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_forumbit_level2_post" varname="sjseo_4" username="Sebijk" version="3.7.0 Beta 1" dateline="1204228040" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 4</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="threadbit" varname="sjseo_5" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228871" searchorder="5" active="1">
+			<title>Sebijks SEO: Themenansicht 1</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]t=$thread[threadid]$thread[highlight]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']"><if condition="$thread[highlight]">thread-$thread[threadid].html?$session[sessionurl]$thread[highlight]
+<else />thread-$thread[threadid].html$session[sessionurl_q]</if><else />showthread.php?$session[sessionurl]t=$thread[threadid]$thread[highlight]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_lastpostby" varname="sjseo_6" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228150" searchorder="5" active="1">
+			<title>Sebijks SEO: Letzter Beitrag 1</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]goto=newpost&amp;t=$lastpostinfo[lastthreadid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">newest-post-$lastpostinfo[lastthreadid].html$session[sessionurl_ql]<else />showthread.php?$session[sessionurl]goto=newpost&amp;t=$lastpostinfo[lastthreadid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_lastpostby" varname="sjseo_7" username="Sebijk" version="3.7.0 Beta 6" dateline="1204228252" searchorder="5" active="1">
+			<title>Sebijks SEO: Letzter Beitrag 2</title>
+			<searchstr><![CDATA[showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]#post$lastpostinfo[lastpostid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">post-$lastpostinfo[lastpostid].html$session[sessionur_ql]#post$lastpostinfo[lastpostid]<else />showthread.php?$session[sessionurl]p=$lastpostinfo[lastpostid]#post$lastpostinfo[lastpostid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_subforumbit_nopost" varname="sjseo_8" username="Sebijk" version="3.6.0 Beta 1" dateline="1204228368" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 5</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+		<templateedit template="forumhome_subforumbit_post" varname="sjseo_9" username="Sebijk" version="3.6.0 Beta 1" dateline="1204228405" searchorder="5" active="1">
+			<title>Sebijks SEO: Forenstartseite 6</title>
+			<searchstr><![CDATA[forumdisplay.php?$session[sessionurl]f=$forum[forumid]]]></searchstr>
+			<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">forum-$forum[forumid].html$session[sessionurl_q]<else />forumdisplay.php?$session[sessionurl]f=$forum[forumid]</if>]]></replacestr>
+		</templateedit>
+	</templateedits>
+</product>

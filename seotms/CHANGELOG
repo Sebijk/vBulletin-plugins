@@ -1,0 +1,79 @@
+Versions-History:
+
+Version 0.4.5
+
+ - OpenSource
+
+Version 0.4.4
+
+ - Meta-Tag author hinzugefügt
+ - Einige Linktags hinzugefügt (home, search und help)
+ - Archiv-Link auf Forenkategorie hinzugefügt
+ - TMS nun erforderlich
+
+Version 0.4.3
+
+ - Fehler mit Letzter Beitrag behoben, wenn URL-Umschreibung ausgeschaltet worden sind
+ - Eigene Einstellung für den Meta-Tag Copyright hinzugefügt
+
+Version 0.4.2
+
+ - URL-Umschreibung kann nun unter Einstellungen aktiviert/deaktiviert werden
+ - Template-Edits für die vBulletin Projektverwaltung getrennt (siehe Ordner addons),
+   um spätere TMS-Probleme zu vermeiden. 
+ - Meta-Tag audience hinzugefügt
+
+Version 0.4.1
+
+ - Versionsüberprüfungs-URL hinzugefügt
+ - Kleinere Fehler korrigiert
+
+Version 0.4
+
+ - Meta-Tag Content-Language hinzugefügt
+ - Meta-Tag Copyright hinzugefügt
+ - Unterstützt jetzt auch die vBulletin Projektverwaltung
+ - thema-x.html in thread-x.html umbennant
+ - beitrag-x.html in post-x.html umbennant
+ - neuster-beitrag-x.html in newest-post-x.html umbennant
+ - thema-x-seite-x.html in thread-x-page-x.html umbennant
+ - thema-beitrag-x.html in thread-post-x.html umbennant
+ - Template-Anleitung hinzugefügt für die, die kein TMS installiert haben
+
+Version 0.3 Patchlevel 1
+
+ - Name des Forums in Themen in title-Tag, werden 
+   stattdessen durch den Name der Kategorie ersetzt 
+   (Statt "Thema - Name des Forums" wird daraus
+   "Thema - Forenkategorie")
+ - Kleine Grammatikfehler korrigiert
+ - Meta-Tag publisher hinzugefügt
+ - Versionsfehler korrigiert (0.3 statt 1.0)
+ - ? wird beim letzten Beitrag entfernt
+   (Statt beitrag-x.html? wird nun beitrag-x.html)
+ 
+Version 0.3
+
+ - WOL-Orte hinzugefügt
+ - Letzte Beiträge-URLs werden jetzt auch
+   korrekt umgeschrieben
+ - Einstellungen für die Meta-Tags revisit-after,
+   page-type und page-topic hinzugefügt
+
+Version 0.2
+
+ - Urls Einzelne Beiträge anzeigen werden jetzt 
+   auch umgeschrieben.
+ - H1-Tags in der Themenansicht und in der
+   Forenansicht hinzugefügt.
+ - permalinks in den Beiträgen hinzugefügt
+ - vBulletin Suchmaschinenarchiv etwas
+   suchmaschinenfreundlicher gemacht
+
+Version 0.1 Patchlevel 1
+
+ - RewriteEngine On in der htaccess.txt hinzugefügt!
+
+Version 0.1
+
+ - Erste Veröffentlichung

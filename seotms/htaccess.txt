@@ -1,0 +1,17 @@
+RewriteEngine On
+RewriteRule ^post-([0-9]+).html$ showthread.php?p=$1&%{QUERY_STRING} [L]
+RewriteRule ^thread-([0-9]+).html showthread.php?t=$1&%{QUERY_STRING} [L]
+RewriteRule ^forum-([0-9]+).html forumdisplay.php?f=$1&%{QUERY_STRING} [L]
+RewriteRule ^newest-post-([0-9]+).html showthread.php?goto=newpost&t=$1&%{QUERY_STRING} [L]
+RewriteRule ^post-([0-9]+)-([0-9]+).html showpost.php?p=$1&postcount=$2&%{QUERY_STRING} [L]
+RewriteRule ^thread-([0-9]+)-page-([0-9]+).html$ showthread.php?t=$1&page=$2&%{QUERY_STRING} [L]
+RewriteRule ^project-([0-9]+).html$ project.php?projectid=$1&%{QUERY_STRING} [L]
+RewriteRule ^project-issue-([0-9]+).html$ project.php?issueid=$1&%{QUERY_STRING} [L]
+RewriteRule start.html index.php%{QUERY_STRING} [L]
+# Alte Links
+RewriteRule ^beitrag-([0-9]+).html$ showthread.php?p=$1&%{QUERY_STRING} [L]
+RewriteRule ^post-([0-9]+)-([0-9]+).html showpost.php?p=$1&postcount=$2&%{QUERY_STRING} [L]
+RewriteRule ^neuster-beitrag-([0-9]+).html showthread.php?goto=newpost&t=$1&%{QUERY_STRING} [L]
+RewriteRule ^thema-([0-9]+)-seite-([0-9]+).html$ showthread.php?t=$1&page=$2&%{QUERY_STRING} [L]
+RewriteRule ^thema-([0-9]+).html showthread.php?t=$1&%{QUERY_STRING} [L]
+RewriteRule ^thread-post-([0-9]+).html showthread.php?goto=lastpost&t=$1&%{QUERY_STRING} [L]

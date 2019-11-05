@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+Project Tools Template Edits for Sebijks SEO (URL: http://www.sebijk.com)
+-->
+<templateedits product="sebijk_seotms" version="0.4.2">
+	<templateedit template="pt_projectbit" varname="sjseo_pt_1" username="Sebijk" version="1.0.0 Alpha 1" dateline="1198249696" searchorder="5" active="1">
+		<title>Sebijks SEO: pt_projectbit</title>
+		<searchstr><![CDATA[project.php?$session[sessionurl]projectid=$project[projectid]]]></searchstr>
+		<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">project-$project[projectid].html$session[sessionurl_q]<else />project.php?$session[sessionurl]projectid=$project[projectid]</if>]]></replacestr>
+	</templateedit>
+	<templateedit template="pt_issuebit" varname="sjseo_pt_2" username="Sebijk" version="1.0.0 Beta 2" dateline="1198250148" searchorder="5" active="1">
+		<title>Sebijks SEO: pt_issuebit</title>
+		<searchstr><![CDATA[project.php?$session[sessionurl]issueid=$issue[issueid]]]></searchstr>
+		<replacestr><![CDATA[<if condition="$vboptions['sjseo_urlrewrite']">project-issue-$issue[issueid].html$session[sessionurl_q]<else />project.php?$session[sessionurl]issueid=$issue[issueid]</if>]]></replacestr>
+	</templateedit>
+</templateedits>
