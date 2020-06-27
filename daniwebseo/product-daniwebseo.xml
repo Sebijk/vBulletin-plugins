@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="vbseodaniweb" active="1">
+	<title>vBulletin Daniweb SEO German</title>
+	<description>Search Engine-Friendly URLs for vBulletin</description>
+	<version>Version 1.0</version>
+	<url />
+	<versioncheckurl />
+	<dependencies>
+	</dependencies>
+	<codes>
+	</codes>
+	<templates>
+	</templates>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>vBulletin Daniweb SEO</title>
+			<hookname>global_complete</hookname>
+			<phpcode><![CDATA[// do Dani's optimization
+global $session;
+
+$search_array = array(
+'#<a ([^>]*)href' . preg_quote("=\"forumdisplay.php?$session[sessionurl]f=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]t=") . '([0-9]+)' . preg_quote("&amp;page=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]t=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]goto=newpost&amp;t=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"printthread.php?$session[sessionurl]t=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"sendmessage.php?$session[sessionurl]do=sendtofriend&amp;t=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]t=") . '([0-9]+)' . preg_quote("&amp;goto=next"). '([a-z]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]p=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"member.php?$session[sessionurl]u=") . '([0-9]+)"#',
+
+'#<a ([^>]*)href' . preg_quote("=\"showpost.php?$session[sessionurl]p=") . '([0-9]+)' . preg_quote("&amp;postcount=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]mode=") . '([a-z]+)' . preg_quote("&amp;t=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"showthread.php?$session[sessionurl]p=") . '([0-9]+)' . preg_quote("&amp;mode=") . '([a-z]+)\##',
+
+'#<a ([^>]*)href' . preg_quote("=\"announcement.php?$session[sessionurl]f=") . '([0-9]+)' . preg_quote("&amp;announcementid=") . '([0-9]+)"#',
+'#<a ([^>]*)href' . preg_quote("=\"announcement.php?$session[sessionurl]f=") . '([0-9]+)"#',
+
+);
+$replace_array = array(
+'<a \1href="forum-\2.html"',
+'<a \1href="thema-\2-seite-\3.html"',
+'<a \1href="thema-\2.html"',
+'<a \1href="letzter-beitrag-\2.html"',
+'<a \1href="thema-drucken-\2.html"',
+'<a \1href="thema-senden-\2.html"',
+'<a \1href="gehe-zu-\3-thema-\2.html"',
+'<a \1href="beitrag-\2.html"',
+'<a \1href="benutzerid-\2.html"',
+
+'<a \1href="beitrag-\2-\3.html"',
+'<a \1href="thema-\3-\2.html"',
+'<a \1href="beitrag-\2-\3.html#',
+
+'<a \1href="ankuendigung-\2-\3.html"',
+'<a \1href="ankuendigung-\2.html"',
+
+
+);
+$output = preg_replace($search_array, $replace_array, $vartext);]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+	</phrases>
+	<options>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+</product>
